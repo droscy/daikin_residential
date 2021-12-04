@@ -82,15 +82,18 @@ class DaikinApi:
         async with self._cloud_lock:
             _LOGGER.debug("BEARER REQUEST URL: %s", resourceUrl)
             _LOGGER.debug("BEARER REQUEST HEADERS: %s", headers)
-            if options is not None and "method" in options and options["method"] == "PATCH":
+            if (
+                options is not None
+                and "method" in options
+                and options["method"] == "PATCH"
+            ):
                 _LOGGER.debug("BEARER REQUEST JSON: %s", options["json"])
                 func = functools.partial(
                     requests.patch, resourceUrl, headers=headers, data=options["json"]
                 )
-                # res = requests.patch(resourceUrl, headers=headers, data=options["json"])
             else:
                 func = functools.partial(requests.get, resourceUrl, headers=headers)
-                # res = requests.get(resourceUrl, headers=headers)
+
             try:
                 res = await self.hass.async_add_executor_job(func)
             except Exception as e:
@@ -128,12 +131,14 @@ class DaikinApi:
             "AuthFlow": "REFRESH_TOKEN_AUTH",
             "AuthParameters": {"REFRESH_TOKEN": self.tokenSet["refresh_token"]},
         }
+
         try:
             func = functools.partial(requests.post, url, headers=headers, json=ref_json)
             res = await self.hass.async_add_executor_job(func)
-            # res = requests.post(url, headers=headers, json=ref_json)
         except Exception as e:
             _LOGGER.error("REQUEST FAILED: %s", e)
+            raise e
+
         _LOGGER.debug("refreshAccessToken response code: %s", res.status_code)
         _LOGGER.debug("refreshAccessToken response: %s", res.json())
         res_json = res.json()
@@ -512,12 +517,19 @@ class DaikinApi:
                     dev_data["managementPoints"][1]["errorCode"]["value"])
 
             # print info on devices
-            if dev_data["managementPoints"][1]["econoMode"]["value"] == "on":
+            _presetmode = "none"
+
+            if (
+                "econoMode" in dev_data["managementPoints"][1]
+                and dev_data["managementPoints"][1]["econoMode"]["value"] == "on"
+            ):
                 _presetmode = "eco"
-            elif dev_data["managementPoints"][1]["powerfulMode"]["value"] == "on":
+
+            if (
+                "powerfulMode" in dev_data["managementPoints"][1]
+                and dev_data["managementPoints"][1]["powerfulMode"]["value"] == "on"
+            ):
                 _presetmode = "powerful"
-            else:
-                _presetmode = "none"
 
             _opmode = dev_data["managementPoints"][1]["operationMode"]["value"]
 
