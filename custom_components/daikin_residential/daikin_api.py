@@ -517,29 +517,27 @@ class DaikinApi:
                     dev_data["managementPoints"][1]["errorCode"]["value"])
 
             # print info on devices
+            mp_data = dev_data["managementPoints"][1]
+
             _presetmode = "none"
-
-            if (
-                "econoMode" in dev_data["managementPoints"][1]
-                and dev_data["managementPoints"][1]["econoMode"]["value"] == "on"
-            ):
+            if "econoMode" in mp_data and mp_data["econoMode"]["value"] == "on":
                 _presetmode = "eco"
-
-            if (
-                "powerfulMode" in dev_data["managementPoints"][1]
-                and dev_data["managementPoints"][1]["powerfulMode"]["value"] == "on"
-            ):
+            if "powerfulMode" in mp_data and mp_data["powerfulMode"]["value"] == "on":
                 _presetmode = "powerful"
 
-            _opmode = dev_data["managementPoints"][1]["operationMode"]["value"]
+            _streamer = "not supported"
+            if "streamerMode" in mp_data:
+                _streamer = mp_data["streamerMode"]["value"]
+
+            _opmode = mp_data["operationMode"]["value"]
 
             _LOGGER.debug("DEVICE %s: status=%s, mode=%s, hfan=%s, vfan=%s, preset=%s, streamer=%s",
-                dev_data["managementPoints"][1]["name"]["value"],
-                dev_data["managementPoints"][1]["onOffMode"]["value"],
+                mp_data["name"]["value"],
+                mp_data["onOffMode"]["value"],
                 _opmode,
-                dev_data["managementPoints"][1]["fanControl"]["value"]["operationModes"][_opmode]["fanDirection"]["horizontal"]["currentMode"]["value"],
-                dev_data["managementPoints"][1]["fanControl"]["value"]["operationModes"][_opmode]["fanDirection"]["vertical"]["currentMode"]["value"],
+                mp_data["fanControl"]["value"]["operationModes"][_opmode]["fanDirection"]["horizontal"]["currentMode"]["value"],
+                mp_data["fanControl"]["value"]["operationModes"][_opmode]["fanDirection"]["vertical"]["currentMode"]["value"],
                 _presetmode,
-                dev_data["managementPoints"][1]["streamerMode"]["value"])
+                _streamer)
 
         return True
