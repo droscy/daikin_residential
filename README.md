@@ -1,5 +1,5 @@
 # Daikin Residential Controller homeassistant integration
-Cloud control of Daikin devices that are supported by Daikin Residential Controller app.
+Cloud control of Daikin devices that are supported by Daikin Residential Controller app. When you want to control a Daikin Altherma you can't use this integration but use the [daikin_residential_altherma](https://github.com/speleolontra/daikin_residential_altherma) or [daikin_residential_brp069a62](https://github.com/BigFoot2020/daikin_residential_brp069a62) integration.
 
 **NOTE** The official repository of this integration is owned by rospogrigio at https://github.com/rospogrigio/daikin_residential. My master branch could differ due to commits not yet merged or not accepted by rospogrigio. Instead, my branch `rospomaster` will be kept in sync with rospogrigio's master.
 
