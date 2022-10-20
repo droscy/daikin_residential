@@ -104,7 +104,8 @@ class Appliance(DaikinResidentialDevice):  # pylint: disable=too-many-public-met
             cmd_set = DAIKIN_CMD_SETS[param].copy()
         if "%operationMode%" in cmd_set[2]:
             operation_mode = self.getValue(ATTR_OPERATION_MODE)
-            cmd_set[2] = cmd_set[2].replace("%operationMode%", operation_mode)
+            if operation_mode:
+                cmd_set[2] = cmd_set[2].replace("%operationMode%", operation_mode)
         return cmd_set
 
     def getData(self, param):
@@ -164,7 +165,8 @@ class Appliance(DaikinResidentialDevice):  # pylint: disable=too-many-public-met
     def support_preset_mode(self, mode):
         """Return True if the device supports preset mode."""
         mode = HA_PRESET_TO_DAIKIN[mode]
-        return self.getData(mode) is not None
+        mode_data = self.getData(mode)
+        return mode_data is not None and "value" in mode_data
 
     def preset_mode_status(self, mode):
         """Return the preset mode status."""
@@ -368,6 +370,16 @@ class Appliance(DaikinResidentialDevice):  # pylint: disable=too-many-public-met
         start_index = 7 if period == SENSOR_PERIOD_WEEKLY else 12
         return sum(energy_data[start_index:])
     
+    @property
+    def support_wifi_strength(self):
+        """Return True if the device supports wifi connection strength."""
+        return self.getData(ATTR_WIFI_STRENGTH) is not None
+
+    @property
+    def wifi_strength(self):
+        """Return current wifi connection strength."""
+        return self.getValue(ATTR_WIFI_STRENGTH) if self.support_wifi_strength else None
+
     @property
     def support_wifi_strength(self):
         """Return True if the device supports wifi connection strength."""

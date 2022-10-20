@@ -1,12 +1,13 @@
-# Daikin Residential Controller homeassistant integration
-Cloud control of Daikin devices that are supported by Daikin Residential Controller app. When you want to control a Daikin Altherma you can't use this integration but use the [daikin_residential_altherma](https://github.com/speleolontra/daikin_residential_altherma) or [daikin_residential_brp069a62](https://github.com/BigFoot2020/daikin_residential_brp069a62) integration.
+# Daikin Residential Controller (ONECTA) homeassistant integration
+Cloud control of Daikin devices that are supported by Daikin Residential Controller (now "ONECTA - Daikin") app. If you want to control a Daikin Altherma you can't use this integration but use the [daikin_residential_altherma](https://github.com/speleolontra/daikin_residential_altherma) or [daikin_residential_brp069a62](https://github.com/BigFoot2020/daikin_residential_brp069a62) integration.
 
 **NOTE** The official repository of this integration is owned by rospogrigio at https://github.com/rospogrigio/daikin_residential. My master branch could differ due to commits not yet merged or not accepted by rospogrigio. Instead, my branch `rospomaster` will be kept in sync with rospogrigio's master.
 
 ## Compatibility
 This integration is verified to be compatible with the following Daikin adapters (usually integrated in the device):
 - BRP069C4x
-The integration might work on Other newer adapters as well, but it is not guaranteed.
+- BRP069B4x
+The integration might work on other newer adapters as well, but it is not guaranteed.
 
 ## Installation
 Copy the daikin_residential folder and all of its contents into your Home Assistant's custom_components folder. This is often located inside of your /config folder. If you are running Hass.io, use SAMBA to copy the folder over. If you are running Home Assistant Supervised, the custom_components folder might be located at /usr/share/hassio/homeassistant. It is possible that your custom_components folder does not exist. If that is the case, create the folder in the proper location, and then copy the daikin_residential folder and all of its contents inside the newly created custom_components folder.
@@ -19,7 +20,7 @@ Alternatively, you can install daikin_residential through HACS by adding this re
 The integration can be configured in two ways:
 
 ### 1. YAML config files
-Just add the following lines to your configuration.yaml file specifying the email and password used in the Daikin Residential App, and the Daikin devices connected to your cloud account will be created.
+Just add the following lines to your configuration.yaml file specifying the email and password used in the ONECTA App, and the Daikin devices connected to your cloud account will be created.
 
 ```
 daikin_residential:
@@ -30,7 +31,7 @@ daikin_residential:
 ### 2. Using config flow
 Start by going to Configuration - Integration and pressing the "+ ADD INTEGRATION" button to create a new Integration, then select Daikin Residential Controller in the drop-down menu.
 
-Follow the instructions, you just have to type the email and password used in the Daikin Residential App. After pressing the "Submit" button, the integration will be added, and the Daikin devices connected to your cloud account will be created.
+Follow the instructions, you just have to type the email and password used in the ONECTA App. After pressing the "Submit" button, the integration will be added, and the Daikin devices connected to your cloud account will be created.
 
 ## Thanks to
 This code is based on @Apollon77 's great work, in finding a way to retrieve the token set, and to send the HTTP commands over the cloud. This integration would not exist without his precious job, my job was just to find a way to port his code from nodeJS to python, and then create the integration.
