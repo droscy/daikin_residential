@@ -14,6 +14,8 @@ from homeassistant.components.sensor import (
     STATE_CLASS_TOTAL_INCREASING,
 )
 
+from homeassistant.helpers.entity import EntityCategory
+
 from .daikin_base import Appliance
 
 from .const import (
@@ -24,11 +26,15 @@ from .const import (
     ATTR_INSIDE_TEMPERATURE,
     ATTR_OUTSIDE_TEMPERATURE,
     ATTR_WIFI_STRENGTH,
+    ATTR_WIFI_SSID,
+    ATTR_LOCAL_SSID,
+    ATTR_MAC_ADDRESS,
+    ATTR_SERIAL_NUMBER,
     SENSOR_TYPE_ENERGY,
     SENSOR_TYPE_HUMIDITY,
     SENSOR_TYPE_POWER,
     SENSOR_TYPE_TEMPERATURE,
-    SENSOR_TYPE_SIGNAL_STRENGTH,
+    SENSOR_TYPE_GATEWAY_DIAGNOSTIC,
     SENSOR_PERIODS,
     SENSOR_TYPES,
 )
@@ -49,7 +55,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     sensors = []
     for dev_id, device in hass.data[DAIKIN_DOMAIN][DAIKIN_DEVICES].items():
         if device.support_inside_temperature:
-            _LOGGER.debug("device %s supports inside temperature", dev_id)
+            _LOGGER.debug("device %s supports inside temperature", device.name)
             sensor = DaikinSensor.factory(device, ATTR_INSIDE_TEMPERATURE)
             sensors.append(sensor)
         if device.support_outside_temperature:
@@ -67,6 +73,22 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
             _LOGGER.debug("device %s supports wifi signal strength", device.name)
             sensor = DaikinSensor.factory(device, ATTR_WIFI_STRENGTH)
             sensors.append(sensor)
+        if device.support_wifi_ssid:
+            _LOGGER.debug("device %s supports wifi ssid", device.name)
+            sensor = DaikinSensor.factory(device, ATTR_WIFI_SSID)
+            sensors.append(sensor)
+        if device.support_local_ssid:
+            _LOGGER.debug("device %s supports local ssid", device.name)
+            sensor = DaikinSensor.factory(device, ATTR_LOCAL_SSID)
+            sensors.append(sensor)
+        if device.support_mac_address:
+            _LOGGER.debug("device %s supports mac address", device.name)
+            sensor = DaikinSensor.factory(device, ATTR_MAC_ADDRESS)
+            sensors.append(sensor)
+        if device.support_serial_number:
+            _LOGGER.debug("device %s supports serial number", device.name)
+            sensor = DaikinSensor.factory(device, ATTR_SERIAL_NUMBER)
+            sensors.append(sensor)
     async_add_entities(sensors)
 
 
@@ -81,7 +103,7 @@ class DaikinSensor(SensorEntity):
             SENSOR_TYPE_HUMIDITY: DaikinClimateSensor,
             SENSOR_TYPE_POWER: DaikinEnergySensor,
             SENSOR_TYPE_ENERGY: DaikinEnergySensor,
-            SENSOR_TYPE_SIGNAL_STRENGTH: DaikinWiFiSensor,
+            SENSOR_TYPE_GATEWAY_DIAGNOSTIC: DaikinGatewaySensor,
         }[SENSOR_TYPES[monitored_state][CONF_TYPE]]
         return cls(device, monitored_state, period)
 
@@ -179,14 +201,33 @@ class DaikinEnergySensor(DaikinSensor):
         return STATE_CLASS_TOTAL_INCREASING
 
 
-class DaikinWiFiSensor(DaikinSensor):
-    """Representation of a WiFi Strength Sensor."""
+class DaikinGatewaySensor(DaikinSensor):
+    """Representation of a WiFi Sensor."""
+    
+    # set default category for these entities
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    
+    # auto disable these entities when added for the first time
+    _attr_entity_registry_enabled_default = False
 
     @property
     def state(self):
         """Return the internal state of the sensor."""
-        return self._device.wifi_strength
+        if self._device_attribute == ATTR_WIFI_STRENGTH:
+            return self._device.wifi_strength
+        if self._device_attribute == ATTR_WIFI_SSID:
+            return self._device.wifi_ssid
+        if self._device_attribute == ATTR_LOCAL_SSID:
+            return self._device.local_ssid
+        if self._device_attribute == ATTR_MAC_ADDRESS:
+            return self._device.mac_address
+        if self._device_attribute == ATTR_SERIAL_NUMBER:
+            return self._device.serial_number
+        return None
 
     @property
     def state_class(self):
-        return STATE_CLASS_MEASUREMENT
+        if self._device_attribute == ATTR_WIFI_STRENGTH:
+            return STATE_CLASS_MEASUREMENT
+        else:
+            return None
