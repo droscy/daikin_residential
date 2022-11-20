@@ -33,6 +33,23 @@ Start by going to Configuration - Integration and pressing the "+ ADD INTEGRATIO
 
 Follow the instructions, you just have to type the email and password used in the ONECTA App. After pressing the "Submit" button, the integration will be added, and the Daikin devices connected to your cloud account will be created.
 
+## Known Issues and troubleshooting
+- I am getting the following error when adding the integration: **Failed to retrieve Access Token: ('Login failed: %s', Exception('Unknown Login error: Login Failed Captcha Required'))**
+
+**Solution:** when you have logged in to Daikin services, you have probably used the "Login with Google account" or other service. Try registering on Daikin platform, or register another account and share the devices with that account, then use that second account to configure this Integration.
+
+- I am getting the following error when adding the integration: **Failed to retrieve Access Token: ('Failed to retrieve access token: %s', IATError('Issued in the future'))**
+
+**Solution:** probably your system time is too out of sync with the token issuer's one. Make sure your system datetime is up-to-date, and in general it is advised to connect to an NTP server to keep your datetime synced.
+
+- I am having other general network problems that don't allow me to get or update the connection token
+
+**Solution:** make sure you don't have issues connecting to the address **kinesis.eu-west-1.amazonaws.com** or similar. In general, check if you have any web filtering or adblocking system that might interfere with these connections: try to disable them, and if it starts working then try whitelisting this address or similar.
+
+## To-do list:
+* Fix spurious glitches.
+* Maybe improve the sensors for Energy consumption.
+
 ## Thanks to
 This code is based on @Apollon77 's great work, in finding a way to retrieve the token set, and to send the HTTP commands over the cloud. This integration would not exist without his precious job, my job was just to find a way to port his code from nodeJS to python, and then create the integration.
 
